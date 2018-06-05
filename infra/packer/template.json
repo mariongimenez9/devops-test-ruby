@@ -1,0 +1,61 @@
+{
+    "variables": {
+        "build_subnet"         : "subnet-8b916cd1",
+        "build_vpc"            : "vpc-a881fcce",
+        "git_id"               : "build",
+        "instance_type"        : "t2.micro",
+        "region"               : "eu-west-1",
+        "source_ami"           : "ami-58d7e821",
+        "ssh_username"         : "ubuntu"
+    },
+    "builders": [{
+        "ami_name"                     : "testAircall-{{isotime \"060102-1504\"}}",
+        "associate_public_ip_address"  : "true",
+        "force_deregister"             : "true",
+        "instance_type"                : "{{user `instance_type`}}",
+        "region"                       : "{{user `region`}}",
+        "source_ami"                   : "{{user `source_ami`}}",
+        "ssh_username"                 : "{{user `ssh_username`}}",
+        "subnet_id"                    : "{{user `build_subnet`}}",
+        "type"                         : "amazon-ebs",
+        "vpc_id"                       : "{{user `build_vpc`}}",
+        "tags" : {
+            "Git_id"     : "{{user `git_id` }}",
+            "Source_ami" : "{{ user `source_ami` }}"
+        },
+
+        "run_tags" : {
+            "Git_id"     : "{{user `git_id` }}",
+            "Source_ami" : "{{ user `source_ami` }}"
+        }
+    }],
+    "provisioners": [
+        {
+            "type": "shell",
+            "inline": [
+                "sleep 10"
+            ]
+        },
+        {
+            "type": "shell",
+            "inline": ["mkdir /tmp/conf"]
+        },
+        {
+            "type": "shell",
+            "execute_command": "{{ .Vars }} sudo -E sh '{{ .Path }}'",
+            "scripts": [
+                "{{template_dir}}/scripts/install_packages.sh",
+                "{{template_dir}}/scripts/install_additional_packages.sh",
+                "{{template_dir}}/scripts/config_app.sh",
+                "{{template_dir}}/scripts/config_site.sh",
+                "{{template_dir}}/scripts/install_ruby.sh"
+            ],
+            "environment_vars": [
+                "GIT_ID={{user `git_id`}}",
+                "TMP_DIR=/tmp/conf",
+		"ROOT_DIR=/var/www",
+                "APP_DIR=/var/www/devops-test-ruby"
+            ]
+        }
+    ]
+}
