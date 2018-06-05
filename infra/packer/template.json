@@ -51,10 +51,9 @@
                 "{{template_dir}}/scripts/install_ruby.sh"
             ],
             "environment_vars": [
-                "GIT_ID={{user `git_id`}}",
                 "TMP_DIR=/tmp/conf",
 		"ROOT_DIR=/var/www",
-                "APP_DIR=/var/www/devops-test-ruby"
+                "APP_DIR=/var/www/devops-test-ruby/code"
             ]
         }
     ]
