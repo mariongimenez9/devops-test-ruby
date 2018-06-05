@@ -15,4 +15,9 @@ variable "health_check_grace_period" {}
 variable "name_ami_filter" {}
 variable "backend_name" {}
 variable "env" {}
-
+variable "db_allocated_storage" {}
+variable "db_storage_type" {}
+variable "db_instance_class" {}
+variable "db_username" {}
+variable "db_password" {}
+variable "db_engine" {}

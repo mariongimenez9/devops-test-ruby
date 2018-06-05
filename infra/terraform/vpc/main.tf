@@ -1,7 +1,7 @@
 terraform {
     backend "s3" {
         bucket = "testaircalldev"
-        key    = "test/vpc"
+        key    = "${var.env}/vpc"
         region = "eu-west-1"
     }
 }

@@ -1,0 +1,11 @@
+#  Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# .out files
+*.out
+
+**/.DS_Store/*

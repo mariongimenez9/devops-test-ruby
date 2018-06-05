@@ -24,7 +24,7 @@ else
   rm $${APP_DIR}/config/environments/test.rb
   rm $${APP_DIR}/config/environments/production.rb
   rm $${APP_DIR}/config/puma/production.rb
-#fi
+fi
 
 #chown -R ubuntu:ubuntu $${APP_DIR}/config
 
