@@ -1,10 +1,3 @@
-terraform {
-    backend "s3" {
-        bucket = "testaircalldev"
-        key    = "${var.env}/vpc"
-        region = "eu-west-1"
-    }
-}
 
 provider "aws" {
     region = "${var.region}"
@@ -26,10 +19,11 @@ resource "aws_subnet" "public" {
 
 resource "aws_subnet" "private" {
     vpc_id = "${aws_vpc.main.id}"
-    cidr_block = "${var.private_networks}"
-    availability_zone = "eu-west-1a"
+    count = "${length(split(",",lookup(var.azs,var.region)))}"
+    cidr_block = "${element(split(",",var.private_networks), count.index)}"
+    availability_zone = "${element(split(",", lookup(var.azs,var.region)), count.index)}"
     map_public_ip_on_launch = "false"
-    tags { Name = "${var.vpc_name} private subnet " }
+    tags { Name = "${var.vpc_name} private subnet ${count.index}" }
 }
 
 resource "aws_internet_gateway" "gw" {
@@ -71,7 +65,8 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route_table_association" "rtaprv" {
-    subnet_id = "${aws_subnet.private.id}"
+    count = "${length(split(",",lookup(var.azs,var.region)))}"
+    subnet_id = "${element(aws_subnet.private.*.id,count.index)}"
     route_table_id = "${aws_route_table.private.id}"
 }
 
@@ -88,5 +83,5 @@ output "vpc_id" { value = "${aws_vpc.main.id}" }
 output "region" { value = "${var.region}" }
 output "azs" { value = "${lookup(var.azs,var.region)}" }
 output "public_subnets" { value = "${join(",", aws_subnet.public.*.id)}" }
-output "private_subnets" { value = "${aws_subnet.private.id}" }
+output "private_subnets" { value = "${join(",", aws_subnet.private.*.id)}" }
 output "sg_sshserver" { value = "${aws_security_group.sshserver.id}" }
