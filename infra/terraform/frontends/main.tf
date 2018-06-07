@@ -158,5 +158,36 @@ resource "aws_iam_instance_profile" "web" {
     role = "${aws_iam_role.web.name}"
 }
 
+resource "aws_iam_policy" "webpolicy" {
+  name        = "policy_${var.backend_name}"
+  description = "Policy for front EC2"
+  path        = "/"
+  
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": "arn:aws:s3:::${var.asset_bucket}/"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "kms:*",
+      "Resource": "arn:aws:kms:eu-west-1:575125281408:key/6e2eeeee-e185-4787-aec1-3e88f28d3f8e"
+    }
+  ]
+}
+  EOF
+}
+
+resource "aws_iam_policy_attachment" "attachment" {
+  name       = "policy_attachment_${var.backend_name}"
+  roles      = ["${aws_iam_role.web.name}"]
+  policy_arn = "${aws_iam_policy.webpolicy.arn}"
+}
+
+
 output "sg_web" { value = "${aws_security_group.web.id}" }
 output "web_profile" { value = "${aws_iam_instance_profile.web.id}" }

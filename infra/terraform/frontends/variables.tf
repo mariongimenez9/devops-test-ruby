@@ -21,3 +21,5 @@ variable "db_instance_class" {}
 variable "db_username" {}
 variable "db_password" {}
 variable "db_engine" {}
+variable "asset_bucket" {}
+variable "kms_key_id" {}
